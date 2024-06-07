@@ -6,7 +6,7 @@ from onnx.helper import make_graph, make_model, make_node, make_tensor_value_inf
 from onnx.reference import ReferenceEvaluator
 
 
-def make_my_model() -> ModelProto:
+def make_lr1_model() -> ModelProto:
     X = make_tensor_value_info("X", TensorProto.FLOAT, [None, None])
     A = make_tensor_value_info("A", TensorProto.FLOAT, [None, None])
     B = make_tensor_value_info("B", TensorProto.FLOAT, [None, None])
@@ -16,22 +16,27 @@ def make_my_model() -> ModelProto:
 
     Y = make_tensor_value_info("Y", TensorProto.FLOAT, [None, None])
 
-    g = make_graph([node1, node2], "g", [X, A, B], [Y])
+    graph = make_graph([node1, node2], "graph", [X, A, B], [Y])
 
-    model = make_model(g)
+    model = make_model(graph)
     check_model(model)
     return model
 
 
 if __name__ == "__main__":
-    my_model = make_my_model()
-    print(my_model)
+    model = make_lr1_model()
+    print(model)
 
-    X = np.array([[1, 2, 3], [4, 5, 6]], dtype=np.float32)  # 2 x 3
-    A = np.array([[1, 2], [3, 4], [5, 6]], dtype=np.float32)  # 3 x 2
-    B = np.array([[1]], dtype=np.float32)  # 1 x 1
+    X = np.array([[1, 2, 3], [4, 5, 6]], dtype=np.float32)
+    A = np.array([[1, 2], [3, 4], [5, 6]], dtype=np.float32)
+    B = np.array([[1]], dtype=np.float32)
+    print(f"X:\n{X}\nX.shape: {X.shape}")
+    print(f"A:\n{A}\nA.shape: {A.shape}")
+    print(f"B:\n{B}\nB.shape: {B.shape}")
 
-    sess = ReferenceEvaluator(my_model, verbose=4)
-    output: npt.NDArray[np.float32] = sess.run(None, {"X": X, "A": A, "B": B})[0]
-    print(output)
-    print(output.shape)
+    sess = ReferenceEvaluator(model)
+    inputs = {"X": X, "A": A, "B": B}
+    outputs = sess.run(None, inputs)
+
+    Y: npt.NDArray[np.float32] = outputs[0]
+    print(f"Y:\n{Y}\nY.shape: {Y.shape}")
