@@ -16,7 +16,13 @@ def make_head_model() -> ModelProto:
     add_prefix(concat_model, "concat_", inplace=True)
     add_prefix(reducesum_model, "reducesum_", inplace=True)
 
-    model = merge_models(concat_model, reducesum_model, [("concat_Y", "reducesum_X")], name="head", doc_string="")
+    model = merge_models(
+        concat_model,
+        reducesum_model,
+        [("concat_Y", "reducesum_X")],
+        name="head",
+        doc_string="",
+    )
     check_model(model, full_check=True)
     return model
 
