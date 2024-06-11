@@ -15,16 +15,19 @@ def make_reducesum_model() -> ModelProto:
 
     Y = make_tensor_value_info("Y", TensorProto.FLOAT, [None, None])
 
-    graph = make_graph([node], "graph", [X], [Y], [axes])
+    graph = make_graph([node], "reducesum", [X], [Y], [axes])
 
     model = make_model(graph)
-    check_model(model)
+    check_model(model, full_check=True)
     return model
 
 
 if __name__ == "__main__":
     model = make_reducesum_model()
     print(model)
+
+    with open("models/reducesum.onnx", "wb") as f:
+        f.write(model.SerializeToString())
 
     X = np.array([[1, 2], [3, 4], [5, 6]], dtype=np.float32)
     print(f"X:\n{X}\nX.shape: {X.shape}")

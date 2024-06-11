@@ -17,16 +17,19 @@ def make_lr2_model() -> ModelProto:
 
     Y = make_tensor_value_info("Y", TensorProto.FLOAT, [None, None])
 
-    graph = make_graph([node1, node2], "graph", [X], [Y], [A, B])
+    graph = make_graph([node1, node2], "lr2", [X], [Y], [A, B])
 
     model = make_model(graph)
-    check_model(model)
+    check_model(model, full_check=True)
     return model
 
 
 if __name__ == "__main__":
     model = make_lr2_model()
     print(model)
+
+    with open("models/lr2.onnx", "wb") as f:
+        f.write(model.SerializeToString())
 
     X = np.array([[1, 2], [3, 4]], dtype=np.float32)
     print(f"X:\n{X}\nX.shape: {X.shape}")
