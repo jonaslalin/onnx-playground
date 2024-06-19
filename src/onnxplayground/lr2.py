@@ -8,14 +8,14 @@ from onnx.reference import ReferenceEvaluator
 
 
 def make_lr2_model() -> ModelProto:
-    X = make_tensor_value_info("X", TensorProto.FLOAT, [None, None])
+    X = make_tensor_value_info("X", TensorProto.FLOAT, ["M", 2])
 
     A = from_array(np.array([[1, 2, 3], [4, 5, 6]], np.float32), "A")
     B = from_array(np.array([[1, 2, 3]], dtype=np.float32), "B")
     node1 = make_node("MatMul", ["X", "A"], ["XA"])
     node2 = make_node("Add", ["XA", "B"], ["Y"])
 
-    Y = make_tensor_value_info("Y", TensorProto.FLOAT, [None, None])
+    Y = make_tensor_value_info("Y", TensorProto.FLOAT, ["M", 3])
 
     graph = make_graph([node1, node2], "lr2", [X], [Y], [A, B])
 
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     with open("models/lr2.onnx", "wb") as f:
         f.write(model.SerializeToString())
 
-    X = np.array([[1, 2], [3, 4]], dtype=np.float32)
+    X = np.array([[1, 2], [3, 4], [5, 6]], dtype=np.float32)
     print(f"X:\n{X}\nX.shape: {X.shape}")
 
     sess = ReferenceEvaluator(model)
